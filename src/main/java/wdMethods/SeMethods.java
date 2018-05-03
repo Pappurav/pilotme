@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.InvalidElementStateException;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchFrameException;
@@ -24,6 +25,7 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -37,6 +39,7 @@ public class SeMethods extends Reporter implements WdMethods{
 
 	public static RemoteWebDriver driver;
 	public String sUrl,sHubUrl,sHubPort;
+	public static String  prices, productName;
 	public Properties prop;
 	
 	public SeMethods() {
@@ -67,7 +70,9 @@ public class SeMethods extends Reporter implements WdMethods{
 			else{ // this is for local run
 				if(browser.equalsIgnoreCase("chrome")){
 					System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
-					driver = new ChromeDriver();
+					ChromeOptions options = new ChromeOptions();
+					options.addArguments("--disable-notifications");
+					driver = new ChromeDriver(options);
 				}else {
 					System.setProperty("webdriver.gecko.driver", "./drivers/geckodriver.exe");
 					driver = new FirefoxDriver();
@@ -120,6 +125,19 @@ public class SeMethods extends Reporter implements WdMethods{
 			reportStep("Unknown exception occured while entering "+data+" in the field :"+ele, "FAIL");
 		}
 	}
+	
+	public void enter(WebElement ele, String data) {
+		try {
+			ele.clear();
+			ele.sendKeys(data, Keys.ENTER);
+			String x = ""+ele;
+			reportStep("The data: "+data+" entered successfully in the field :"+ele, "PASS");
+		} catch (InvalidElementStateException e) {
+			reportStep("The data: "+data+" entered successfully in the field :"+ele, "FAIL");
+		} catch (WebDriverException e) {
+			reportStep("Unknown exception occured while entering "+data+" in the field :"+ele, "FAIL");
+		}
+	}
 
 	public void click(WebElement ele) {
 		String text = "";
@@ -128,9 +146,9 @@ public class SeMethods extends Reporter implements WdMethods{
 			wait.until(ExpectedConditions.elementToBeClickable(ele));	
 			text = ele.getText();
 			ele.click();
-			reportStep("The element "+text+" is clicked", "PASS");
+			reportStep("The element: " + text + " is clicked", "PASS");
 		} catch (InvalidElementStateException e) {
-			reportStep("The element: "+text+" could not be clicked", "FAIL");
+			reportStep("The element: " + text+ "  could not be clicked", "FAIL");
 		} catch (WebDriverException e) {
 			reportStep("Unknown exception occured while clicking in the field :", "FAIL");
 		} 
@@ -143,13 +161,15 @@ public class SeMethods extends Reporter implements WdMethods{
 			wait.until(ExpectedConditions.elementToBeClickable(ele));	
 			text = ele.getText();
 			ele.click();			
-			reportStep("The element :"+text+"  is clicked.", "PASS",false);
+			reportStep("The element: " + text+ "  is clicked.", "PASS",false);
 		} catch (InvalidElementStateException e) {
-			reportStep("The element: "+text+" could not be clicked", "FAIL",false);
+			reportStep("The element could not be clicked", "FAIL",false);
 		} catch (WebDriverException e) {
 			reportStep("Unknown exception occured while clicking in the field :","FAIL",false);
 		} 
 	}
+	
+	
 
 	public String getText(WebElement ele) {	
 		String bReturn = "";

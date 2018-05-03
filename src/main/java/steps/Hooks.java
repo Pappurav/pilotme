@@ -17,7 +17,7 @@ public class Hooks extends SeMethods{
 		startTestModule(sc.getName(), sc.getId());
 		test = startTestCase(sc.getName());
 		test.assignCategory("smoke");
-		test.assignAuthor("");
+		test.assignAuthor("Vino");
 		startApp("chrome");
 	}
 	
